@@ -1,99 +1,46 @@
 package test3;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
 
 public class CreditCard extends DefaultCard{
-    private int CardId = getCardId()+1;
-    private String name = getName();
-    private double balance = 10000;
-    private Date time = new Date();
-    private long timeLock = time.getTime() + 24000;
+    private static int CREDIT_CARD_ID = 20200090;
+    private static double DEFAULT_BALANCE = 10_000;
+    private double WITHDRAW_LIMIT = 1_000;
+    private Duration LOCK_TIME = Duration.ofDays(24);
+    private int LIMIT_TIMES = 5;
+    private int YOUR_TIMES = 0;
+    private String CardType;
 
-    public CreditCard(int cardId, String name, double balance, Date time, int timeLock) {
-        CardId = cardId;
-        this.name = name;
-        this.balance = balance;
-        this.time = time;
-        this.timeLock = timeLock;
-    }
+    private Instant unlockAt = Instant.now().plus(LOCK_TIME);
 
     public CreditCard() {
-
+        super(DEFAULT_BALANCE);
+        this.CardType = "Credit";
     }
 
     @Override
-    public int getCardId() {
-        return CardId;
-    }
-
-    @Override
-    public void setCardId(int cardId) {
-        CardId = cardId;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public double getBalance() {
-        return balance;
-    }
-
-    @Override
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
-    public long getTimeLock() {
-        return timeLock;
-    }
-
-    public void setTimeLock(int timeLock) {
-        this.timeLock = timeLock;
-    }
-
-    @Override
-    public void displayAll(){
-        System.out.println("Personal Credit Card ID: " + getCardId() + "\n" +
-                "Person: " + getName() + "\n" +
-                "Balance: " + getBalance() + "$\n");
-    }
-
-    @Override
-    public void addBalance(double money){
-        if (money > 0) {
-            balance += money;
-        } else {
-            System.out.println("You can't add negative number or nothing");
+    public boolean withdrawBalance(double money){
+        if (DEFAULT_BALANCE-money <= 0){
+            System.out.println("Too much: You can't withdraw more than your balance");
+            return false;
         }
+        if (WITHDRAW_LIMIT <= money){
+            System.out.println("Credit Limit: You can't withdraw more than 1000");
+            return false;
+        }
+        if(WITHDRAW_LIMIT >= money && LIMIT_TIMES > YOUR_TIMES){
+            WITHDRAW_LIMIT -= money;
+            YOUR_TIMES++;
+            System.out.println("Lock Activation: You activate your daily possible withdraw");
+            return true;
+        }
+        DEFAULT_BALANCE -= money;
+        return true;
     }
 
     @Override
-    public void subBalance(double money){
-        if (balance-money >= 0){
-            balance -= money;
-        } else {
-            System.out.println("You can't sub more than your balance, too much");
-        }
-        if (1000 >= money){
-            System.out.println(time);
-        } else {
-            System.out.println("You can't sub more than 1000$, because credit limit");
-        }
+    public void printInfo(){
+        System.out.println("CardType: " + CardType + " " + " CardId: " + CREDIT_CARD_ID + " " + "Name: " + super.getName() + " " + "Balance: " + this.getBalance() + "$ ");
     }
 }
