@@ -1,3 +1,5 @@
+package test1;
+
 public class Printer {
     public void print(int text){
         System.out.println("Printing..." + "\n" +
